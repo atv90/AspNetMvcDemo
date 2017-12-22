@@ -1,0 +1,37 @@
+﻿@model IEnumerable<AspNetMvcDemo.Models.Customers>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Asiakkaat, staattinen tapa</h2>
+
+<p>Kontrollerista tullutta tietoa: <strong>@ViewBag.OmaTieto</strong>.</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Asiakas-id</th>
+            <th>Nimi</th>
+            <th>Osoite</th>
+            <th>Kaupunki</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--Muodostetaan muuttuja nimeltään cust, joka läpikäy 
+            model-kokoelman(kerrottu sivun ylälaidassa)-->
+        @foreach (AspNetMvcDemo.Models.Customers cust in Model)
+            {<!--tehdään silmukka, jonka jokaisella kierroksella tulostetaan 
+                tr-tagi ja sen sisälle td-tagi eli solu joissa viitataan miukumaukulla 
+                cust-olioon sen perään yksittäisiin taulun tietoihin-->
+            
+                <tr>
+                    <td>@cust.CustomerID</td>
+                    <td>@cust.CompanyName</td>
+                    <td>@cust.Address</td>
+                    <td>@cust.City</td>
+                </tr>
+            }
+    </tbody>
+</table>
+
+<p>Asiakkaita yhteensä: @Model.Count().</p>
