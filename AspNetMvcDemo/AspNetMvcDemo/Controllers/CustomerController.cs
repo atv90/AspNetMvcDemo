@@ -1,4 +1,5 @@
 ﻿using AspNetMvcDemo.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,33 @@ namespace AspNetMvcDemo.Controllers
 
             //palautetaan näkymälle model-olio
             return View(model);
+        }
+
+        public ActionResult Index2()
+        {
+            
+            //palautetaan näkymälle model-olio
+            return View();
+        }
+
+        public JsonResult GetList()
+        {
+            NorthwindEntities entities = new NorthwindEntities();
+            // List<Customers> model = entities.Customers.ToList();
+
+            //muodostetaan näkymäluokka, joka halutaan välittää Ajaxin kautta
+            var model = (from c in entities.Customers
+                         select new
+                         {
+                             CustomerID = c.CustomerID,
+                             CompanyName = c.CompanyName,
+                             Address = c.Address,
+                             City = c.City
+                         }).ToList();
+            string json = JsonConvert.SerializeObject(model);
+            entities.Dispose();
+
+            return Json(json,JsonRequestBehavior.AllowGet);
         }
     }
 }

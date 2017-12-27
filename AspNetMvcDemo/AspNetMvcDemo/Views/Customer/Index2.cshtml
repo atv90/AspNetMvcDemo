@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+@section scripts {
+    
+<script type="text/javascript">
+        $(function () {
+            $.getJSON("/customer/getlist", null, function (json) {
+                var customers = JSON.parse(json);
+                alert("Asiakkaiden lukumäärä: " + customers.length);
+                var html = "";
+                for (var index = 0; index < customers.length; index++) {
+                    html += "<tr>" +
+                            "<td>" + customers[index].CustomerID + "</td >" +
+                            "<td>" + customers[index].CompanyName + "</td >" +
+                            "<td>" + customers[index].Address + "</td >" +
+                            "<td>" + customers[index].City + "</td >"
+                    "</tr>\r\n";
+                }
+                //tulosten näyttäminen ruudulla
+                $("#customerList tbody").html(html);
+            });
+        });
+</script>
+    
+    }
+
+<h2>Asiakkaat, dynaaminen tapa Ajaxilla</h2>
+
+
+<table class="table table-striped" id="customerList">
+    <thead>
+        <tr>
+            <th>Asiakas-id</th>
+            <th>Nimi</th>
+            <th>Osoite</th>
+            <th>Kaupunki</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
