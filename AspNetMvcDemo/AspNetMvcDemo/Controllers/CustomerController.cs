@@ -8,6 +8,8 @@ using System.Web.Mvc;
 
 namespace AspNetMvcDemo.Controllers
 {
+
+    //Index malliolio menetelmä
     public class CustomerController : Controller
     {
         // GET: Customer
@@ -25,10 +27,14 @@ namespace AspNetMvcDemo.Controllers
             return View(model);
         }
 
+        //Index2 osuus ajax-kutsuun liittyvää
         public ActionResult Index2()
+        {            
+            return View();
+        }
+
+        public ActionResult Index3()
         {
-            
-            //palautetaan näkymälle model-olio
             return View();
         }
 
