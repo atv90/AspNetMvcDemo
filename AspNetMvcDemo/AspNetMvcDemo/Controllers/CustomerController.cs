@@ -57,5 +57,50 @@ namespace AspNetMvcDemo.Controllers
 
             return Json(json,JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetSingleCustomer(string id)
+        {
+            NorthwindEntities entities = new NorthwindEntities();
+            // List<Customers> model = entities.Customers.ToList();
+
+            //muodostetaan näkymäluokka, joka halutaan välittää Ajaxin kautta
+            var model = (from c in entities.Customers
+                         where c.CustomerID == id
+                         select new
+                         {
+                             CustomerID = c.CustomerID,
+                             CompanyName = c.CompanyName,
+                             Address = c.Address,
+                             City = c.City
+                         }).FirstOrDefault();
+            string json = JsonConvert.SerializeObject(model);
+            entities.Dispose();
+
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Update(Customers cust)
+        {
+            NorthwindEntities entities = new NorthwindEntities();
+            string id = cust.CustomerID;
+
+            bool OK = false;
+            Customers dbItem = (from c in entities.Customers
+                                where c.CustomerID == id
+                                select c).FirstOrDefault();
+            //tallennetaan vain ne tiedot joita käyttäjä on voinut muokata
+            if (dbItem != null)
+            {
+                dbItem.CompanyName = cust.CompanyName;
+                dbItem.Address = cust.Address;
+                dbItem.City = cust.City;
+
+                //tallennus tietokantaan
+                entities.SaveChanges();
+                OK = true;
+            }
+            entities.Dispose();
+            return Json(OK);
+        }
+
     }
 }

@@ -2,35 +2,110 @@
     ViewBag.Title = "Index";
 }
 @section scripts {
-    
-<script type="text/javascript">
 
-    function päivitäAsiakaslistaus()
-    {
-        $.getJSON("/customer/getlist", null, function (json)
-        {
-            var customers = JSON.parse(json);
-            alert("Asiakkaiden lukumäärä: " + customers.length);
-            var html = "";
-            for (var index = 0; index < customers.length; index++) {
-                html += "<tr>" +
-                    "<td><a href='#'><span class='glyphicon glyphicon-pencil'></span></a></td>"+
-                    "<td>" + customers[index].CustomerID + "</td >" +
-                    "<td>" + customers[index].CompanyName + "</td >" +
-                    "<td>" + customers[index].Address + "</td >" +
-                    "<td>" + customers[index].City + "</td >"
-                "</tr>\r\n";
-            }
-            //tulosten näyttäminen ruudulla
-            $("#customerList tbody").html(html);
+    <script type="text/javascript">
+
+        function päivitäAsiakaslistaus() {
+            $.getJSON("/customer/getlist", null, function (json) {
+                var customers = JSON.parse(json);
+                //alert("Asiakkaiden lukumäärä: " + customers.length);
+                var html = "";
+                for (var index = 0; index < customers.length; index++) {
+                    html += "<tr>" +
+                        "<td><a href='#'><span class='glyphicon glyphicon-pencil'></span></a></td>" +
+                        "<td>" + customers[index].CustomerID + "</td >" +
+                        "<td>" + customers[index].CompanyName + "</td >" +
+                        "<td>" + customers[index].Address + "</td >" +
+                        "<td>" + customers[index].City + "</td >"
+                    "</tr>\r\n";
+                }
+                //tulosten näyttäminen ruudulla
+                $("#customerList tbody").html(html);
+
+                // tietojen muokkaus
+                $(".glyphicon-pencil").click(function () {
+                    // etsitään asiakkaan tiedot klikatulta riviltä
+                    var customerId = $(this).parent().parent().next().text();
+                    //alert(customerId);
+
+                    // haetaan asiakkaan tiedot id:n perusteella
+                    $.getJSON("/customer/getsinglecustomer/" + customerId, null, function (json2) {
+                        var customer = JSON.parse(json2);
+
+                        // kopioidaan tiedot ikkunaan
+                        $("#customerModal_CustId").val(customer.CustomerID);
+                        $("#customerModal_Company").val(customer.CompanyName);
+                        $("#customerModal_Address").val(customer.Address);
+                        $("#customerModal_City").val(customer.City);
+
+                        // näytetään ikkuna
+                        $("#customerModalTitle").text("Muokkaa asiakasta");
+                        $("#customerModalDialog").modal("show");
+                    });
+                });
+
+                //// tietojen poisto
+                //$(".glyphicon-trash").click(function () {
+                //    // etsitään asiakkaan tiedot klikatulta riviltä
+                //    console.log("Poistoa klikattu");
+                //    var customerId = $(this).parent().parent().prev().prev().prev().prev().text();
+                //    var ok = confirm("Haluatko varmasti poistaa asiakkaan " + customerId + "?");
+
+                //    if (ok == true) {
+                //        $.getJSON("/customer/delete/" + customerId, null, function (status) {
+                //            if (status == true) {
+                //                alert("Asiakas on nyt poistettu!");
+                //                päivitäAsiakaslistaus();
+                //            }
+                //            else {
+                //                alert("Poistaminen ei onnistunut, yritä uudelleen!");
+                //            }
+                //        });
+                //    }
+                //});
+            });
+        }
+        // sivun alustaminen
+        $(function () {
+            päivitäAsiakaslistaus();
+
+            $("#addNewCustomerButton").click(function () {
+
+                // tyhjennetään ikkunan tiedot
+                $("#customerModal_CustId").val("(uusi)");
+                $("#customerModal_Company").val("");
+                $("#customerModal_Address").val("");
+                $("#customerModal_City").val("");
+
+                $("#customerModalTitle").text("Lisää uusi asiakas");
+                $("#customerModalDialog").modal("show");
+            });
+            $("#customerModalSaveButton").click(function () {
+                // luetaan käyttäjän syöttämät kentät
+                var details = {
+                    CustomerID: $("#customerModal_CustId").val(),
+                    CompanyName: $("#customerModal_Company").val(),
+                    Address: $("#customerModal_Address").val(),
+                    City: $("#customerModal_City").val()
+                };
+
+                $.post("/customer/update/", details, function (status) {
+                    if (status == true) {
+                        alert("Uudet tiedot tallennettu!");
+                        $("#customerModalDialog").modal("hide");
+                        päivitäAsiakaslistaus();
+                    }
+                    else {
+                        alert("Tallennus ei onnistunut, yritä uudelleen!");
+                    }
+                });
+            });
+
+            console.log("Alustus valmis!");
         });
-    }
-    $(function () {
-        päivitäAsiakaslistaus();  
-        });
-</script>
-    
-    }
+    </script>
+
+}
 
 <h2>Asiakkaat, dynaaminen muokkaus Ajaxilla</h2>
 
@@ -45,7 +120,38 @@
             <th>Kaupunki</th>
         </tr>
     </thead>
-    <tbody>
-    </tbody>
+    <tbody></tbody>
 </table>
 
+<div class="modal fade" tabindex="-1" role="dialog" id="customerModalDialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span id="customerModalTitle">Muokkaa asiakasta</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">Asiakas-id</div>
+                    <div class="col-md-6"><input class="form-control" id="customerModal_CustId" type="text" readonly></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">Nimi</div>
+                    <div class="col-md-6"><input class="form-control" id="customerModal_Company" type="text"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">Osoite</div>
+                    <div class="col-md-6"><input class="form-control" id="customerModal_Address" type="text"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">Kaupunki</div>
+                    <div class="col-md-6"><input class="form-control" id="customerModal_City" type="text"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Sulje</button>
+                <button type="button" class="btn btn-primary" id="customerModalSaveButton">Tallenna</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
