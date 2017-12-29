@@ -38,7 +38,7 @@
                         $("#customerModal_Address").val(customer.Address);
                         $("#customerModal_City").val(customer.City);
 
-                        // näytetään ikkuna
+                        // näytetään ikkuna ja haluttu otsikko
                         $("#customerModalTitle").text("Muokkaa asiakasta");
                         $("#customerModalDialog").modal("show");
                     });
@@ -76,8 +76,9 @@
                 $("#customerModal_Company").val("");
                 $("#customerModal_Address").val("");
                 $("#customerModal_City").val("");
-
+                //modaali-ikkunan otsikkokenttä
                 $("#customerModalTitle").text("Lisää uusi asiakas");
+                //näytetään ikkuna
                 $("#customerModalDialog").modal("show");
             });
             $("#customerModalSaveButton").click(function () {
@@ -88,7 +89,7 @@
                     Address: $("#customerModal_Address").val(),
                     City: $("#customerModal_City").val()
                 };
-
+                //uusien tietojen lisäys
                 $.post("/customer/update/", details, function (status) {
                     if (status == true) {
                         alert("Uudet tiedot tallennettu!");
@@ -108,7 +109,8 @@
 }
 
 <h2>Asiakkaat, dynaaminen muokkaus Ajaxilla</h2>
-
+<!--UUDEN ASIAKKAAN LISÄÄMINEN-->
+<button class="btn btn-primary" id="addNewCustomerButton">Lisää uusi asiakas</button>
 
 <table class="table table-striped" id="customerList">
     <thead>

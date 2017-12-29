@@ -84,19 +84,43 @@ namespace AspNetMvcDemo.Controllers
             string id = cust.CustomerID;
 
             bool OK = false;
-            Customers dbItem = (from c in entities.Customers
-                                where c.CustomerID == id
-                                select c).FirstOrDefault();
-            //tallennetaan vain ne tiedot joita käyttäjä on voinut muokata
-            if (dbItem != null)
+            //onko kyseessä uusi lisäys vai vanhan muokkaus
+            if (id == "(uusi)")
             {
-                dbItem.CompanyName = cust.CompanyName;
-                dbItem.Address = cust.Address;
-                dbItem.City = cust.City;
-
-                //tallennus tietokantaan
+                //uuden lisääminen eli kopioidaan kentät
+                Customers dbItem = new Customers()
+                {
+                    //otetaan CompanyNamesta Substring funktiolla 5 ensimmäistä merkkiä, jos loppuu
+                    //välilyöntiin tehdään Trim()
+                    CustomerID = cust.CompanyName.Substring(0, 5).Trim().ToUpper(),
+                    CompanyName = cust.CompanyName,
+                    Address = cust.Address,
+                    City = cust.City
+                };
+                //tallennetaan uusi lisäys tietokantaan
+                entities.Customers.Add(dbItem);
                 entities.SaveChanges();
                 OK = true;
+
+            }
+            else
+            {
+
+                //muokkaus eli haetaan id:n perusteella rivi tietokannasta
+                Customers dbItem = (from c in entities.Customers
+                                    where c.CustomerID == id
+                                    select c).FirstOrDefault();
+                //tallennetaan vain ne tiedot joita käyttäjä on voinut muokata
+                if (dbItem != null)
+                {
+                    dbItem.CompanyName = cust.CompanyName;
+                    dbItem.Address = cust.Address;
+                    dbItem.City = cust.City;
+
+                    //tallennus tietokantaan
+                    entities.SaveChanges();
+                    OK = true;
+                }
             }
             entities.Dispose();
             return Json(OK);
