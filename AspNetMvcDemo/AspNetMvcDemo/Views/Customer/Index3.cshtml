@@ -16,7 +16,8 @@
                         "<td>" + customers[index].CustomerID + "</td >" +
                         "<td>" + customers[index].CompanyName + "</td >" +
                         "<td>" + customers[index].Address + "</td >" +
-                        "<td>" + customers[index].City + "</td >"
+                        "<td>" + customers[index].City + "</td >"+
+                        "<td><a href='#'><span class='glyphicon glyphicon-trash'></span></a></td >"+
                     "</tr>\r\n";
                 }
                 //tulosten näyttäminen ruudulla
@@ -44,25 +45,25 @@
                     });
                 });
 
-                //// tietojen poisto
-                //$(".glyphicon-trash").click(function () {
-                //    // etsitään asiakkaan tiedot klikatulta riviltä
-                //    console.log("Poistoa klikattu");
-                //    var customerId = $(this).parent().parent().prev().prev().prev().prev().text();
-                //    var ok = confirm("Haluatko varmasti poistaa asiakkaan " + customerId + "?");
+                // tietojen poisto
+                $(".glyphicon-trash").click(function () {
+                    // etsitään asiakkaan tiedot klikatulta riviltä
+                    console.log("Poistoa klikattu");
+                    var customerId = $(this).parent().parent().prev().prev().prev().prev().text();
+                    var ok = confirm("Haluatko varmasti poistaa asiakkaan " + customerId + "?");
 
-                //    if (ok == true) {
-                //        $.getJSON("/customer/delete/" + customerId, null, function (status) {
-                //            if (status == true) {
-                //                alert("Asiakas on nyt poistettu!");
-                //                päivitäAsiakaslistaus();
-                //            }
-                //            else {
-                //                alert("Poistaminen ei onnistunut, yritä uudelleen!");
-                //            }
-                //        });
-                //    }
-                //});
+                    if (ok == true) {
+                        $.getJSON("/customer/delete/" + customerId, null, function (status) {
+                            if (status == true) {
+                                alert("Asiakas on nyt poistettu!");
+                                päivitäAsiakaslistaus();
+                            }
+                            else {
+                                alert("Poistaminen ei onnistunut, yritä uudelleen!");
+                            }
+                        });
+                    }
+                });
             });
         }
         // sivun alustaminen
@@ -81,6 +82,7 @@
                 //näytetään ikkuna
                 $("#customerModalDialog").modal("show");
             });
+
             $("#customerModalSaveButton").click(function () {
                 // luetaan käyttäjän syöttämät kentät
                 var details = {

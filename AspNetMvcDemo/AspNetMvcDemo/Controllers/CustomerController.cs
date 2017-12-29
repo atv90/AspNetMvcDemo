@@ -125,6 +125,25 @@ namespace AspNetMvcDemo.Controllers
             entities.Dispose();
             return Json(OK);
         }
+        public ActionResult Delete (string id)
+        {
+            NorthwindEntities entities = new NorthwindEntities();
 
+            // etsitään id:n perusteella asiakasrivi kannasta
+            bool OK = false;
+            Customers dbItem = (from c in entities.Customers
+                               where c.CustomerID == id
+                               select c).FirstOrDefault();
+            if (dbItem != null)
+            {
+                // tietokannasta poisto
+                entities.Customers.Remove(dbItem);
+                entities.SaveChanges();
+                OK = true;
+            }
+            entities.Dispose();
+
+            return Json(OK, JsonRequestBehavior.AllowGet);
+        }
     }
 }
